@@ -1,0 +1,153 @@
+@(request: play.mvc.Http.Request)
+
+  <!DOCTYPE html> 
+  <html>
+  
+  <meta charset="utf-8" />
+  <title>Reactive Tweets</title>
+  
+  
+  <h2>Reactive Tweets</h2>
+  <body>  
+
+  
+  <input type="text" id="name" >
+  <br/>
+    <button type="button" onclick="chk()">submit</button>
+   
+  
+  <div id="output"></div> 
+  
+  <script type='text/javascript' src='https://code.jquery.com/jquery-3.3.1.min.js'></script>
+  <script language="javascript" type="text/javascript">
+
+  var output;
+
+  function init()
+  {
+    output = document.getElementById("output");
+
+  }
+
+  function chk(){
+	  var x = document.getElementById("name").value;
+	  var n = "http://localhost:9000/script?keyword="+x;
+	  testWebSocket(n);
+  }
+
+  function testWebSocket(n)
+  {
+    websocket = new WebSocket("ws://localhost:9000/ws");
+    
+    var xhttp = new XMLHttpRequest();
+	  
+	  xhttp.open("GET", n, true);
+	  xhttp.send();
+	  
+    websocket.onopen = function(evt) { onOpen(evt) };
+    websocket.onclose = function(evt) { onClose(evt) };
+    websocket.onmessage = function(evt) { onMessage(evt) };
+    websocket.onerror = function(evt) { onError(evt) };
+  }
+  function onOpen(evt)
+  {
+    var sent_message = JSON.stringify("Handshake"); 
+    doSend(sent_message);
+    writeToScreen("connected");
+  }
+
+  function onClose(evt)
+  {
+    writeToScreen("DISCONNECTED");
+  }
+
+  function onMessage(evt)
+  {
+	
+	var ResultObj = JSON.parse(evt.data);
+	//writeToScreen(Result.Obj.response.tweets);
+	writeLinks(ResultObj.response);
+
+  }
+
+  function onError(evt)
+  {
+    writeToScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
+  }
+
+  function doSend(message)
+  {
+    websocket.send(message);
+  }
+
+  function writeToScreen(message)
+  {
+	   var pre = document.createElement("p");
+	   pre.style.wordWrap = "break-word";
+	   pre.innerHTML = message;
+	   output.appendChild(pre);
+  }
+  
+  function writeTweets(message)
+  {
+	   var pre = document.createElement("p");
+	   pre.style.wordWrap = "break-word";
+	   pre.innerHTML = message;
+	   output.appendChild(pre);
+  }
+  
+  function writeLinks(message)
+  {    
+	
+	  if(Boolean(!document.getElementById(message.words))){
+		   // Your existing code unmodified...
+		var br = document.createElement("br");
+		var iDiv = document.createElement("div");
+		iDiv.id = message.words;
+		iDiv.style.height = "200px";
+		        iDiv.style.width = "auto";
+				iDiv.style.overflow='auto'
+		        iDiv.style.backgroundColor = '#BDBDBD';
+		document.getElementsByTagName('body')[0].appendChild(iDiv);
+		document.body.appendChild(br);
+
+		// Now create and append to iDiv
+		var br = document.createElement("br");
+		var str = message.handle;
+
+		    var result = str.link("https://localhost:9000/profile/"+message.handle);
+		    var fullresult = message.words+result + message.tweets;
+		   
+		    document.getElementById(message.words).innerHTML = fullresult;
+		    document.getElementById(message.words).appendChild(br);
+
+		// The variable iDiv is still good... Just append to it.
+
+		}else{
+
+		
+		var br = document.createElement("br");
+		var element = document.getElementById(message.words);
+		var str = message.handle;
+		    var result = str.link("https://localhost:9000/profile/"+message.handle);
+		    var fullresult = message.words+result + message.tweets;
+		    document.getElementById(message.words).innerHTML += fullresult;
+
+		document.getElementById(message.words).appendChild(br);
+		// The variable iDiv is still good... Just append to it.
+
+		}
+		var theLinks = document.getElementById(message.words).getElementsByTagName("a");
+
+		  for(var i = 0; i < theLinks.length; i++) {
+		    theLinks[i].setAttribute('target','_blank');
+
+		}
+
+  }
+  window.addEventListener("load", init, false);
+
+  </script>
+   
+  </body>
+  </html>

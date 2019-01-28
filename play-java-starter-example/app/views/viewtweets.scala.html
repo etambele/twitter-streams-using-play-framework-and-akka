@@ -1,0 +1,19 @@
+@(results : List[String], links : List[String])
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+</head>
+<body>
+	<h1>Recent Tweets</h1>
+	<ol>
+		@for(index <- 0 until results.size){
+		<li>
+			<p>
+				<a href="profile/@links(index)">@links(index)</a>: @results(index)
+			</p>
+		</li> 
+		}
+	</ol>
+</body>
+</html>

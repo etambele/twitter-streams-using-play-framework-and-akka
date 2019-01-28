@@ -1,0 +1,7 @@
+$ ->
+  ws = new WebSocket $("body").data("ws-url")
+ws.onerror = (error) ->
+  ws.log ( 'WebSocket Error ' + error )
+ws.onmessage = (e) ->
+  console.log ( 'Server: ' + e.data );
+  $('#server_msg').append('<p>' + e.data + '</p>')

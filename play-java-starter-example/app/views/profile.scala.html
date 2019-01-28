@@ -1,0 +1,18 @@
+@(profileInfo : String, tweets : List[String])
+<!DOCTYPE html>
+<html>
+	<head>
+	<title></title>
+	</head>
+	<body>	
+	<h1> Profile info</h1>
+	@profileInfo
+    <ol>
+	@for(index <- 0 until tweets.size){
+	<li>
+	<p> @tweets(index) </p>
+  	 </li>
+  }
+      </ol>    
+	</body>
+</html>
